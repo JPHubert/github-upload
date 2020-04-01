@@ -1,0 +1,108 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nameSegmentA": {
+      "type": "string",
+      "metadata": {
+        "description": "The first segment of the name of the resource: Business Unit - (10MPOC) identifier"
+      }    
+    },
+    "nameSegmentB": {
+      "type": "string",
+      "metadata": {
+        "description": "Service ID: e.g. ADDS, MONI, BKUP,..."
+      }
+    },
+    "nameSegmentC": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment Identifier: e.g. dv for Dev, sb for Sandbox"
+      }
+    },
+    "addressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "The address space in CIDR notation for the new virtual network."
+      }
+    },
+    "subnetPrefixADDS": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the Active Directory subnet."
+      }
+    },
+    "subnetPrefixSS": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the shared services subnet."
+      }
+    },
+    "subnetPrefixMGMT": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the shared Management subnet."
+      }
+    }
+  },
+  "variables": {
+    "vNetsegmentReplace": "[replace(parameters('addressPrefix'),'/', '_')]",
+    "virtualNetworkName": "[concat(parameters('nameSegmentA'),parameters('nameSegmentB'),parameters('nameSegmentC'),'-',variables('vNetsegmentReplace'))]",
+    "subnetName": "[concat(parameters('nameSegmentA'),'GW','SN', '001', parameters('nameSegmentC'),'-',variables('subNet1segmentReplace'))]",
+    "subNet1segmentReplace": "[replace(parameters('subnetPrefixADDS'),'/', '_')]",
+    "subNet2segmentReplace": "[replace(parameters('subnetPrefixSS'),'/', '_')]",
+    "subNet3segmentReplace": "[replace(parameters('subnetPrefixMGMT'),'/', '_')]",
+    "subnetName1": "[concat(parameters('nameSegmentA'),'ADDS','SN', parameters('nameSegmentC'),'-',variables('subNet1segmentReplace'))]",
+    "subnetName2": "[concat(parameters('nameSegmentA'),'SHRDSVC','SN',  parameters('nameSegmentC'),'-',variables('subNet2segmentReplace'))]",
+    "subnetName3": "[concat(parameters('nameSegmentA'),'MGMT','SN',  parameters('nameSegmentC'),'-',variables('subNet3segmentReplace'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-06-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName1')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefixADDS')]"
+
+            }
+          },
+
+          {
+            "name": "[variables('subnetName3')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefixMGMT')]"
+
+            }
+
+          }
+          
+        ]
+      }
+    },
+    {
+      "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/virtualNetworkLock')]",
+      "type": "Microsoft.Network/virtualNetworks/providers/locks",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+
+      "properties": {
+        "level": "CannotDelete"
+      }
+    }
+    
+
+  ]
+}

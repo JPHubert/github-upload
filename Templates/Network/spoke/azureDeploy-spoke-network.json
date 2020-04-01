@@ -1,0 +1,153 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nameSegmentA": {
+      "type": "string",
+      "metadata": {
+        "description": "The first segment of the name of the resource:  Business Unit - (10MPOC) identifier"
+      }
+    },
+    "nameSegmentB": {
+      "type": "string",
+      "metadata": {
+        "description": "The service ID: e.g. AA for Azure Automation, GW for Azure Gateway"
+      }
+    },
+    "nameSegmentC": {
+      "type": "string",
+      "metadata": {
+        "description": "Environment Identifier: e.g. dv for Dev, sb for Sandbox"
+      }
+    },
+    "addressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "The address space in CIDR notation for the new virtual network."
+      }
+    },
+    "subnetPrefix1": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the Tier 1 subnet."
+      }
+    },
+    "subnetPrefix2": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the Tier 2 subnet."
+      }
+    },
+    "subnetPrefix3": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range in CIDR notation for the Tier 3 subnet."
+      }
+    },
+    "pairVirtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the virtual network which you would like to pair to this virtual network. This is NOT this virtual network name."
+      }
+    },
+    "peerSubscriptionId": {
+      "type": "string",
+      "metadata": {
+        "description": "The subscription ID of the subscription that contains the remote VNET."
+      }
+    },
+    "peerResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resource group that contains the remote VNET"
+      }
+    }
+  },
+  "variables": {
+    "vNetsegmentReplace": "[replace(parameters('addressPrefix'),'/', '_')]",
+    "virtualNetworkName": "[concat(parameters('nameSegmentA'),parameters('nameSegmentB'),parameters('nameSegmentC'),'-',variables('vNetsegmentReplace'))]",
+    "subNet1segmentReplace": "[replace(parameters('subnetPrefix1'),'/', '_')]",
+    "subNet2segmentReplace": "[replace(parameters('subnetPrefix2'),'/', '_')]",
+    "subNet3segmentReplace": "[replace(parameters('subnetPrefix3'),'/', '_')]",
+    "subnetName1": "[concat(parameters('nameSegmentA'), parameters('nameSegmentB'), parameters('nameSegmentC'),'-',variables('subNet1segmentReplace'))]",
+    "subnetName2": "[concat(parameters('nameSegmentA'), parameters('nameSegmentB'), parameters('nameSegmentC'),'-',variables('subNet2segmentReplace'))]",
+    "subnetName3": "[concat(parameters('nameSegmentA'), parameters('nameSegmentB'), parameters('nameSegmentC'),'-',variables('subNet3segmentReplace'))]",
+    "vnetPeeringToHub": "[concat(variables('virtualNetworkName'), '-', parameters('pairVirtualNetworkName'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-06-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        
+      ],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName1')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix1')]"
+            
+            }
+          },
+          {
+            "name": "[variables('subnetName2')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix2')]"
+             
+            }
+          },
+          {
+            "name": "[variables('subnetName3')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix3')]"
+
+            }
+          }
+        ]
+      },
+      "resources": [
+        {
+          "apiVersion": "2016-06-01",
+          "type": "virtualNetworkPeerings",
+          "name": "[variables('vnetPeeringToHub')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+          ],
+          "properties": {
+            "allowVirtualNetworkAccess": "true",
+            "allowForwardedTraffic": "true",
+            "allowGatewayTransit": "false",
+            "useRemoteGateways": "false",
+            "remoteVirtualNetwork": {
+              "id": "[resourceId(parameters('peerSubscriptionId'),parameters('peerResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('pairVirtualNetworkName'))]"
+            }
+          }
+        }
+      ]
+
+    },
+    {
+      "name": "[concat(variables('virtualNetworkName'), '/Microsoft.Authorization/virtualNetworkLock')]",
+      "type": "Microsoft.Network/virtualNetworks/providers/locks",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+
+      "properties": {
+        "level": "CannotDelete"
+      }
+    }
+  ]
+}

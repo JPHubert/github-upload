@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "adminUsername": {
+        "reference": {
+            "keyVault": {
+              "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+            },
+            "secretName": "windowsAdmin"
+          }
+      },
+      "adminPassword": {
+        "reference": {
+            "keyVault": {
+              "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+            },
+            "secretName": "windowsAdminPass"
+          }
+      },
+      "virtualMachineNamePrefix": {
+        "value": "10MWINVM"
+      },
+      "windowsOSVersion": {
+        "value": "2016-Datacenter"
+      },
+      "virtualNetworkResourceGroupName": {
+        "value": "10M-SNET-P"
+      },
+      "existingvNet": {
+        "value": "10MSNETP-172.20.16.0_21"
+      },
+      "existingSubnet": {
+        "value": "10MSNETP-172.20.16.0_24"
+      },
+      "privateIPAddress": {
+        "value": [
+          "172.20.16.8",
+          "172.20.16.10"
+        ]
+      },
+      "omsworkspaceID": {
+        "reference": {
+            "keyVault": {
+              "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+            },
+            "secretName": "omsWorkSpaceID"
+          }
+      },
+      "omsprimaryKey": {
+        "reference": {
+            "keyVault": {
+              "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+            },
+            "secretName": "omsPrimaryKey"
+          }
+      },
+      "existingdiagnosticsStorageAccountName": {
+        "value": "tenmstore"
+      },
+      "existingdiagnosticsStorageResourceGroup": {
+        "value": "10M-CLOUDADMIN-P"
+      }
+    }
+  }

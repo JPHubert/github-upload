@@ -1,0 +1,28 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "skuName": {
+      "value": "F1"
+    },
+    "skuCapacity": {
+      "value": 1
+    },
+    "sqlAdministratorLoginPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "saturnSQLPasswd"
+      }
+    },
+    "sqlAdministratorLogin": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "saturnSQLUser"
+      }
+    }
+  }
+}

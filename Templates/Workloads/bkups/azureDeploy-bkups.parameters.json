@@ -1,0 +1,22 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "existingVirtualMachinesResourceGroup": {
+      "value": "10M-WIND-P"
+    },
+    "existingVirtualMachines": {
+      "value": ["10MWINVM1","10MWINVM0"] 
+    },
+    "existingVaultResourceGroup": {
+      "value": "10M-CLOUDADMIN-P"
+    },  
+    "existingRecoveryServicesVault": {
+      "value": "tenm-recovery-vault"
+    },
+    "existingBackupPolicy": {
+      "value": "DailyBackupPolicy"
+    }
+  }
+}
+

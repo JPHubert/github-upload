@@ -1,0 +1,204 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "virtualMachineNamePrefix": {
+      "type": "string",
+      "maxLength": 15,
+      "metadata": {
+        "description": "Name of the virtual machine to be created"
+      }
+    },
+    "ubuntuOSVersion": {
+      "type": "string",
+      "allowedValues": [
+        "12.04.5-LTS",
+        "14.04.5-LTS",
+        "15.10",
+        "16.04.0-LTS"
+      ],
+      "metadata": {
+        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+      }
+    },
+    "virtualNetworkResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "existing RG that contains the virtual network to attach to (spoke)"
+      }
+    },
+    "existingvNet": {
+      "type": "string",
+      "metadata": {
+        "desciption": "name of the existing vnet to assign to this LINUX vm"
+      }
+    },
+    "existingSubnet": {
+      "type": "string",
+      "metadata": {
+        "desciption": "name of the existing subnet to assign to this LINUX vm"
+      }
+    },
+    "privateIPAddress": {
+      "type": "array",
+      "metadata": {
+        "description": "list of private IP addresses to assign"
+      }
+    },
+    "omsworkspaceID": {
+      "type": "string",
+      "metadata": {
+        "description": "The OMS workspace ID that you would like to register to."
+      }
+    },
+    "omsprimaryKey": {
+      "type": "string",
+      "metadata": {
+        "description": "The OMS workspace key to use."
+      }
+    },
+    "existingdiagnosticsStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of an existing storage account to which diagnostics data will be transferred."
+      }
+    },
+    "existingdiagnosticsStorageResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group for the storage account specified in existingdiagnosticsStorageAccountName"
+      }
+    }
+  },
+  "variables": {
+    "vnetID": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks', parameters('existingvNet'))]",
+    "lnxSubnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('existingSubnet'))]",
+    "imagePublisher": "Canonical",
+    "imageOffer": "UbuntuServer",
+    "vmSize": "Standard_A1",
+    "omsApiVersion": "2015-06-15",
+    "diagsapiVersion": "2015-06-15",
+    "omsResourceGroup": "10M-MONI-P",
+    "omsworkspaceName": "tenmoms",
+    "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',parameters('existingdiagnosticsStorageResourceGroup'), '/providers/','Microsoft.Storage/storageAccounts/', parameters('existingdiagnosticsStorageAccountName'))]"
+
+
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-03-30",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualMachineNamePrefix'), copyIndex(), '-NIC1'))]" ],
+      "copy": {
+        "name": "VMcopy",
+        "count": "[length(parameters('privateIPAddress'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachineNamePrefix'),copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+
+
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[parameters('ubuntuOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+
+            "name": "[concat(parameters('virtualMachineNamePrefix'),copyIndex())]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          }
+
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualMachineNamePrefix'), copyIndex(), '-NIC1'))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "name": "OMSExtension",
+          "apiVersion": "[variables('omsApiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineNamePrefix'), copyIndex())]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+            "type": "OmsAgentForLinux",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "workspaceId": "[reference(resourceId(variables('omsResourceGroup') , 'Microsoft.OperationalInsights/workspaces/', variables('omsworkspaceName')), '2015-03-20').customerId]"
+            },
+            "protectedSettings": {
+            
+              "workspaceKey": "[listKeys(resourceId(variables('omsResourceGroup') , 'Microsoft.OperationalInsights/workspaces/', variables('omsworkspaceName')), '2015-03-20').primarySharedKey]"
+            }
+          }
+        }
+      ]
+    },
+
+      {
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(), '-NIC1')]",
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "copy": {
+          "name": "NICCopy",
+          "count": "[length(parameters('privateIPAddress'))]"
+        },
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Static",
+                "privateIPAddress": "[parameters('privateIPAddress')[copyIndex()]]",
+                "subnet": {
+                  "id": "[variables('lnxSubnetRef')]"
+                }
+              }
+            }
+
+          ]
+        }
+
+      }
+    ],
+
+
+      "outputs":{}
+
+}
+    

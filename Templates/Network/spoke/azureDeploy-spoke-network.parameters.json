@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nameSegmentA": {
+      "value": "10M"
+    },
+    "nameSegmentB": {
+      "value": "SNET"
+    },
+    "nameSegmentC": {
+      "value": "P"
+    },
+    "addressPrefix": {
+      "value": "172.20.16.0/21"
+    },
+    "subnetPrefix1": {
+      "value": "172.20.16.0/24"
+    },
+    "subnetPrefix2": {
+      "value": "172.20.17.0/24"
+    },
+    "subnetPrefix3": {
+      "value": "172.20.18.0/24"
+    },
+    "pairVirtualNetworkName": {
+      "value": "10MVNETP-172.20.0.0_23"
+    },
+    "peerSubscriptionId": {
+      "value": "d4c489d8-20ae-42bb-81da-7d6bf72f4bf3"
+    },
+    "peerResourceGroup": {
+      "value": "10M-HNET-P"
+    }
+  }
+}

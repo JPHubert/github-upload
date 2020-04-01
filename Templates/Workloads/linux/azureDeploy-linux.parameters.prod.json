@@ -1,0 +1,62 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "azRoot"
+      }
+    },
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "azRootPass"
+      }
+    },
+    "omsprimaryKey": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "omsPrimaryKey"
+      }
+    },
+    "omsworkspaceID": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        },
+        "secretName": "omsWorkSpaceID"
+      }
+    },
+    "virtualMachineNamePrefix": {
+        "value": "10MLINUXVM"
+      },
+    "ubuntuOSVersion": {
+        "value": "16.04.0-LTS"
+      },
+    "existingdiagnosticsStorageAccountName": {
+        "value": "tenmstore"
+      },
+      "existingdiagnosticsStorageResourceGroup": {
+        "value": "10M-CLOUDADMIN-P"
+      },
+    "virtualNetworkResourceGroupName": {
+      "value": "10M-SNET-P"
+    },
+    "existingvNet": {
+      "value": "10MSNETP-172.20.16.0_21"
+    },
+    "existingSubnet": {
+      "value": "10MSNETP-172.20.17.0_24"
+    },
+    "privateIPAddress": {
+      "value": [ "172.20.17.8", "172.20.17.10" ]
+    }
+  }
+  }

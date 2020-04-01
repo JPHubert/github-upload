@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "HUBVirtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Set the local VNet name"
+      }
+    },
+    "existingSpokeProdVirtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Set the remote VNet name"
+      }
+    },
+    "SpokePrdVirtualNetworkResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Sets the remote VNet Resource group"
+      }
+    },
+    "peerProdSubscriptionId": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('HUBVirtualNetworkName'))]",
+    "HubToVnetP": "[concat(parameters('HUBVirtualNetworkName'), '-', parameters('existingSpokeProdVirtualNetworkName'))]",
+    "hubtoprdspokename": "[concat(parameters('HUBVirtualNetworkName'),'-',parameters('existingSpokeProdVirtualNetworkName'))]",
+    "prdpeeringName": "[concat(parameters('HUBVirtualNetworkName'), '/' , variables('hubtoprdspokename'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2016-06-01",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "name": "[variables('prdpeeringName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+
+      ],
+      "properties": {
+        "allowVirtualNetworkAccess": "true",
+        "allowForwardedTraffic": "true",
+        "allowGatewayTransit": "false",
+        "useRemoteGateways": "false",
+        "remoteVirtualNetwork": {
+          "id": "[resourceId(parameters('peerProdSubscriptionId'),parameters('SpokePrdVirtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks',parameters('existingSpokeProdVirtualNetworkName'))]"
+        }
+      }
+    }
+  ]
+}

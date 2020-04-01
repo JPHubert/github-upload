@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "HUBVirtualNetworkName": {
+      "value": "10MVNETP-172.20.0.0_23"
+    },
+    "existingSpokeProdVirtualNetworkName": {
+      "value": "10MSNETP-172.20.16.0_21"
+    },
+    "SpokePrdVirtualNetworkResourceGroupName": {
+      "value": "10M-SNET-P"
+    },
+    "peerProdSubscriptionId": {
+      "value": "d4c489d8-20ae-42bb-81da-7d6bf72f4bf3"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "createChildDomain": {
+      "value": false
+    },
+    "createSecondDc": {
+      "value": false
+    },
+    "DomainName": {
+      "value": "tenthmag.com"
+    },
+    "ChildDomainName": {
+      "value": "child"
+    },
+    "adminUsername": {
+      "value": "tenmuser"
+    },
+    "adminPassword": {
+      "value": "P@55wDrd1234"
+    },
+    "VMSize": {
+      "value": "Standard_DS1_v2"
+    },
+    "imageSKU": {
+      "value": "2016-Datacenter"
+    },
+    "virtualNetworkName": {
+      "value": "10MVNETP-172.20.0.0_23"
+    },
+    "externalDNSForwarder": {
+      "value": "8.8.8.8"
+    },
+    "adSubnetName": {
+      "value": "10MADDSSNP-172.20.0.16_28"
+    },
+    "RootDC1Name": {
+      "value": "tenmaddsdc1"
+    },
+    "RootDC1IPAddress": {
+      "value": "172.20.0.22"
+    },
+    "RootDC2Name": {
+      "value": "rootdc2"
+    },
+    "RootDC2IPAddress": {
+      "value": "10.0.0.5"
+    },
+    "ChildDC3Name": {
+      "value": "childdc3"
+    },
+    "ChildDC3IPAddress": {
+      "value": "10.0.0.6"
+    },
+    "ChildDC4Name": {
+      "value": "childdc4"
+    },
+    "ChildDC4IPAddress": {
+      "value": "10.0.0.7"
+    },
+    "virtualNetworkResourceGroupName": {
+      "value": "10M-HNET-P"
+    },
+    "existingdiagnosticsStorageAccountName": {
+      "value": "tenmstore"
+    },
+    "existingdiagnosticsStorageResourceGroup": {
+      "value": "10M-CLOUDADMIN-P"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "omsWorkspaceName": {
+        "value": "tenmoms"
+      },
+      "omsWorkspaceRegion": {
+        "value": "East US"
+      },
+      "omsRecoveryVaultName": {
+        "value": "tenmomsrecoveryvault"
+      },
+      "omsRecoveryVaultRegion": {
+        "value": "East US 2"
+      },
+        "omsAutomationAccountName": {
+            "value": "10M-AA"
+        },
+      "omsAutomationRegion": {
+        "value": "East US 2"
+      },
+        "azureAdminPwd": {
+	  "reference": {
+       	    "keyVault": {
+          	"id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+        	},
+        	"secretName": "recsvcazureAdminPwd"
+              }            
+            },
+         "azureAdmin": {
+          "reference": {
+            "keyVault": {
+                "id": "/subscriptions/5812a8ba-0c59-46ab-a3ed-a36b202a8534/resourceGroups/10M-CLOUDADMIN-P/providers/Microsoft.KeyVault/vaults/tenm-vault"
+                },
+                "secretName": "recsvcazureAdmin"
+              }
+            },
+      "_artifactsLocation": {
+        "value": "https://raw.githubusercontent.com/perrijon/dct/master/oms"
+      }
+    }
+}

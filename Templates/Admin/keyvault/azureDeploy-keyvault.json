@@ -1,0 +1,193 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Key Vault"
+      }
+    },
+    "vaultSku": {
+      "type": "string",
+      "allowedValues": [
+        "standard",
+        "premium"
+      ],
+      "metadata": {
+        "description": "SKU for the vault"
+      }
+    },
+    "enabledForDeployment": {
+      "type": "bool",
+      "metadata": {
+        "description": "Specifies if the vault is enabled for VM or Service Fabric deployment"
+      }
+    },
+    "enabledForTemplateDeployment": {
+      "type": "bool",
+      "metadata": {
+        "description": "Specifies if the vault is enabled for ARM template deployment"
+      }
+    },
+    "enableVaultForVolumeEncryption": {
+      "type": "bool",
+      "metadata": {
+        "description": "Specifies if the vault is enabled for volume encryption"
+      }
+    }
+  
+  },
+  "variables": {
+    
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('keyVaultName')]",
+      "apiVersion": "2015-06-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "KeyVault"
+      },
+      "properties": {
+        "sku": {
+          "name": "[parameters('vaultSku')]",
+          "family": "A"
+
+        },
+        "enabledForDeployment": "[parameters('enabledForDeployment')]",
+        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+        "enabledForVolumeEncryption": "[parameters('enableVaultForVolumeEncryption')]",
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "e755671f-8d37-488b-b356-8326b692d745",
+            "permissions": {
+              "keys": [ "ALL" ],
+              "secrets": [ "ALL" ]
+            }
+
+          },
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "14c8ee81-3adf-4ac2-b38f-36f4dd1f3a62",
+            "permissions": {
+              "keys": [ "ALL" ],
+              "secrets": [ "ALL" ]
+            }
+
+
+          },
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "f2be9522-6338-4975-883c-af9ff5125fcb",
+            "permissions": {
+              "keys": [ "ALL" ],
+              "secrets": [ "ALL" ]
+            }
+
+
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/windowsAdmin')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "azWinAdmin"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/windowsAdminPass')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "azWinAdminpa55w0rd"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/azRoot')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "azRoot"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/azRootPass')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "azRootpa55w0rd"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/saturnSQLUser')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "saturnsqlsa"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/saturnSQLPasswd')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "P@55W0rd12344Saturn"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/recsvcazureAdminPwd')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "P@55W0rd12344AA"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(parameters('keyVaultName'), '/recsvcazureAdmin')]",
+      "apiVersion": "2015-06-01",
+      "properties": {
+        "contentType": "text/plain",
+        "value": "svcazureAdmin"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+      ]
+    }
+  ]
+}

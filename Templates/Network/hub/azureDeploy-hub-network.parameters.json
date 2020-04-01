@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nameSegmentA": {
+      "value": "10M"
+    },
+    "nameSegmentB": {
+      "value": "VNET"
+    },
+    "nameSegmentC": {
+      "value": "P"
+    },
+    "addressPrefix": {
+      "value": "172.20.0.0/23"
+    },
+    "subnetPrefixADDS": {
+      "value": "172.20.0.16/28"
+    },
+    "subnetPrefixSS": {
+      "value": "172.20.1.0/24"
+    },
+    "subnetPrefixMGMT": {
+      "value": "172.20.0.32/28"
+    }
+  }
+}
